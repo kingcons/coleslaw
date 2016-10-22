@@ -16,7 +16,8 @@
    (sitenav         :initarg :sitenav        :reader sitenav)
    (staging-dir     :initarg :staging-dir    :reader staging-dir)
    (theme           :initarg :theme          :reader theme)
-   (title           :initarg :title          :reader title))
+   (title           :initarg :title          :reader title)
+   (blog-index      :initarg :blog-index     :reader blog-index))
   (:default-initargs
    :feeds        nil
    :license      nil
@@ -26,7 +27,15 @@
    :lang         "en"
    :page-ext     "html"
    :separator    ";;;;;"
-   :staging-dir  "/tmp/coleslaw"))
+   :staging-dir  "/tmp/coleslaw"
+   :blog-index   "index.html"))
+
+(defmethod initialize-instance :after ((config blog) &key)
+  (with-slots (routing) config
+    (setf routing
+          (map 'list
+               #'(lambda (el) (list (first el) (eval (second el))))
+               routing))))
 
 (defun dir-slot-reader (config name)
   "Take CONFIG and NAME, and return a directory pathname for the matching SLOT."
